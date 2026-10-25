@@ -1,5 +1,4 @@
-# Stage 0 foundation: validation only, no cloud deployments.
-# Import this repository into Azure Repos or connect Azure Pipelines to GitHub.
+# Stage 0: offline validation only. No Azure subscription credentials required.
 trigger:
   branches:
     include:
@@ -27,6 +26,14 @@ steps:
       test -f evaluations/README.md
       echo "Stage 0 repository structure validated."
     displayName: Validate monorepo foundation
+
+  - bash: |
+      set -euo pipefail
+      az bicep version
+      az bicep build --file infrastructure/bicep/main.bicep --stdout > /dev/null
+      az bicep build-params --file infrastructure/bicep/main.bicepparam --stdout > /dev/null
+      echo "Bicep template and parameters compiled successfully."
+    displayName: Compile Bicep infrastructure (no deployment)
 
   - bash: |
       set -euo pipefail
