@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+.env
+.env.*
+!.env.example
+
+# Azure / IaC generated
+*.bicepparam.json
+*.tfstate
+*.tfstate.*
+.azure/
+dist/
+build/
+node_modules/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
