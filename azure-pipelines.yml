@@ -1,0 +1,38 @@
+# Stage 0 foundation: validation only, no cloud deployments.
+# Import this repository into Azure Repos or connect Azure Pipelines to GitHub.
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - checkout: self
+    displayName: Checkout repository
+
+  - bash: |
+      set -euo pipefail
+      test -f README.md
+      test -f docs/architecture/README.md
+      test -f agents/developer-rag/README.md
+      test -f agents/deployment-concierge/README.md
+      test -f agents/failure-investigator/README.md
+      test -f evaluations/README.md
+      echo "Stage 0 repository structure validated."
+    displayName: Validate monorepo foundation
+
+  - bash: |
+      set -euo pipefail
+      if git grep -n -I -E 'BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|AccountKey=[A-Za-z0-9+/]{20,}' -- . ':!azure-pipelines.yml'; then
+        echo "Potential hardcoded secret detected."
+        exit 1
+      fi
+      echo "Basic secret pattern check passed (not a substitute for a full secret scanner)."
+    displayName: Basic secret pattern check
